@@ -1,6 +1,9 @@
 from typing import Optional, List
 from fastapi import FastAPI, Depends, HTTPException, status, Query
 from sqlmodel import Field, Session, SQLModel, create_engine, select
+from dotenv import load_dotenv, find_dotenv
+
+from os import getenv
 
 app : FastAPI = FastAPI(
     titile="Session",
@@ -29,13 +32,16 @@ class CreateHero(HeroBase):
     pass
 
 class UpdateHero(HeroBase):
-    name: Optional[str] = None
+    name: Optional[str]  = None
     secret_name: Optional[str] = None
     age: Optional[int] = None
 
+_ : bool = load_dotenv(find_dotenv())
 
-database_url = "postgresql://aqeelshahzad1215:lyALVYh48Pom@ep-dry-block-77954970.us-east-2.aws.neon.tech/gpts?sslmode=require"
+database_url = getenv("POSTGRES_URL")
 
+if not database_url:
+    raise ValueError("POSTGRES_URL environment variable is not set")
 # connect_args = {"check_same_thread": False}
 engine = create_engine(database_url, echo=True)
 

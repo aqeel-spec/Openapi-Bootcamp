@@ -1,6 +1,9 @@
-from typing import Optional
 from sqlmodel import Field, SQLModel, create_engine, Session , select
 from fastapi import FastAPI
+from dotenv import load_dotenv, find_dotenv
+from os import getenv
+
+from typing import Optional
 
 class Hero(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -8,8 +11,13 @@ class Hero(SQLModel, table=True):
     secret_name: str
     age: Optional[int] = None
 
+_ : bool = load_dotenv(find_dotenv())
+connection_str = getenv("POSTGRES_URL")
 
-engine = create_engine("postgresql://aqeelshahzad1215:lyALVYh48Pom@ep-dry-block-77954970.us-east-2.aws.neon.tech/gpts?sslmode=require")
+if not connection_str:
+    raise ValueError("POSTGRES_URL environment variable is not set")
+
+engine = create_engine(connection_str, echo=True)
 
 
 # initialize app

@@ -1,7 +1,10 @@
+from multiprocessing import connection
 from fastapi import FastAPI, HTTPException , Depends , status, Query
 from pydantic import BaseModel
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 from typing import Annotated, Optional
+from dotenv import load_dotenv, find_dotenv
+from os import getenv
 
 app : FastAPI = FastAPI(
     titile="Location with DB",
@@ -24,7 +27,11 @@ class Location(SQLModel, table=True):
     name : str = Field(default=None, primary_key=True)
     location : str
 
-database_url = "postgresql://aqeelshahzad1215:lyALVYh48Pom@ep-dry-block-77954970.us-east-2.aws.neon.tech/gpts?sslmode=require"
+_ : bool = load_dotenv(find_dotenv())
+database_url = getenv("POSTGRES_URL")
+
+if not database_url:
+    raise ValueError("POSTGRES_URL environment variable is not set")
 
 engine = create_engine(database_url)
 
